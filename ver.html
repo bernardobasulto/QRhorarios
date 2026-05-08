@@ -8,49 +8,31 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       background: #1a1a1a;
+      font-family: Arial, sans-serif;
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
-      font-family: Arial, sans-serif;
-      overflow: auto;
     }
     .contenedor {
       text-align: center;
       padding: 10px;
       width: 100%;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
     }
     .titulo {
       font-size: 1.2em;
       color: #fff;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
       text-transform: capitalize;
       background: rgba(0,0,0,0.7);
       padding: 8px 20px;
       border-radius: 20px;
-      z-index: 10;
-    }
-    .imagen-container {
-      width: 100%;
-      height: 85vh;
-      overflow: auto;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      -webkit-overflow-scrolling: touch;
+      display: inline-block;
     }
     img {
-      width: auto;
+      width: 100%;
       height: auto;
-      max-width: 100%;
       border-radius: 4px;
-      cursor: zoom-in;
-      transition: transform 0.3s;
       display: block;
     }
     .error {
@@ -60,26 +42,12 @@
       background: rgba(0,0,0,0.7);
       border-radius: 10px;
     }
-    .instruccion {
-      position: fixed;
-      bottom: 15px;
-      color: rgba(255,255,255,0.6);
-      font-size: 0.75em;
-      background: rgba(0,0,0,0.5);
-      padding: 6px 16px;
-      border-radius: 15px;
-      z-index: 10;
-      pointer-events: none;
-    }
   </style>
 </head>
 <body>
   <div class="contenedor">
     <div class="titulo" id="nombre-sala"></div>
-    <div class="imagen-container" id="imagen-container">
-      <img id="horario-img" alt="Horario de la sala">
-    </div>
-    <p class="instruccion">📱 Pellizca para zoom  •  Toca la imagen para verla completa</p>
+    <img id="horario-img" alt="Horario de la sala">
   </div>
 
   <script>
@@ -88,7 +56,6 @@
       const sala = params.get('sala');
       const img = document.getElementById('horario-img');
       const nombreDiv = document.getElementById('nombre-sala');
-      const imgContainer = document.getElementById('imagen-container');
 
       if (!sala) {
         document.querySelector('.contenedor').innerHTML =
@@ -96,38 +63,15 @@
         return;
       }
 
-      // Mostrar nombre legible
       nombreDiv.textContent = '📅 ' + sala.replace(/-/g, ' ');
 
-      // Cargar imagen con timestamp para evitar caché
+      // timestamp para evitar caché
       img.src = 'images/' + sala + '.png?t=' + Date.now();
 
       img.onerror = function() {
         document.querySelector('.contenedor').innerHTML =
           '<p class="error">❌ Sin horario para esta sala.<br><small>Aún no se ha cargado la imagen.</small></p>';
       };
-
-      // Al hacer clic en la imagen, abrirla en una ventana nueva con zoom libre
-      img.addEventListener('click', function() {
-        const nuevaVentana = window.open('', '_blank');
-        nuevaVentana.document.write(
-          '<!DOCTYPE html>' +
-          '<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=10.0, user-scalable=yes">' +
-          '<title>Horario - ' + sala + '</title>' +
-          '<style>body{margin:0;background:#000;display:flex;justify-content:center;align-items:center;min-height:100vh;overflow:auto;}' +
-          'img{width:auto;height:auto;max-width:100%;display:block;}</style>' +
-          '</head><body><img src="' + img.src + '" alt="Horario"></body></html>'
-        );
-        nuevaVentana.document.close();
-      });
-
-      // También permitir scroll y zoom nativo en el contenedor
-      imgContainer.addEventListener('click', function(e) {
-        if (e.target === imgContainer) {
-          // Click en el fondo no hace nada especial
-        }
-      });
-
     })();
   </script>
 </body>
